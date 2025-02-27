@@ -28,7 +28,7 @@ export default function HomePage() {
     setInput("");
 
     try {
-      const response = await fetch("http://brainmax.zeabur.app/generate_copy", {
+      const response = await fetch("https://brainmaxs.zeabur.app/generate_copy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: userMessage }),
@@ -68,7 +68,7 @@ export default function HomePage() {
 
   const confirmSave = async () => {
     try {
-      const response = await fetch("http://brainmax.zeabur.app/save_generated_copy", {
+      const response = await fetch("https://brainmaxs.zeabur.app/save_generated_copy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
