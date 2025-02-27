@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import * as XLSX from "xlsx";  // 引入 xlsx 库
 
 export default function Read() {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ export default function Read() {
 
   // 取得資料
   useEffect(() => {
-    fetch("https://brainmaxs.zeabur.app/get_test_results") // 從後端讀取資料
+    fetch("https://brainmaxs.zeabur.app/get_test_results") // 更新為遠程 API
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
@@ -25,6 +26,22 @@ export default function Read() {
       });
   }, []);
 
+  // 下載 Excel 檔案
+  const downloadExcel = () => {
+    // 若需要處理嵌套資料結構，可以在此處理
+    const flattenedData = data.map(item => ({
+      id: item.id,
+      full_name: item.full_name, // 假設 full_name 是一個字段
+      question: item.question,
+      answer: item.answer,
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(flattenedData); // 把資料轉換成工作表
+    const wb = XLSX.utils.book_new(); // 創建一個新的工作簿
+    XLSX.utils.book_append_sheet(wb, ws, "Data"); // 把工作表添加到工作簿
+    XLSX.writeFile(wb, "test_results.xlsx"); // 下載為 Excel 文件
+  };
+
   return (
     <div className="flex flex-col h-screen items-center justify-center bg-gray-100 p-6">
       <div className="bg-white p-6 shadow-lg rounded-2xl w-full max-w-2xl">
@@ -32,26 +49,36 @@ export default function Read() {
         {loading && <p className="text-blue-500">📡 資料加載中...</p>}
         {error && <p className="text-red-500">{error}</p>}
         {!loading && !error && (
-          <table className="w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="border p-2">ID</th>
-                <th className="border p-2">使用者名稱</th>
-                <th className="border p-2">問題</th>
-                <th className="border p-2">回應</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item) => (
-                <tr key={item.id} className="border-t">
-                  <td className="border p-2">{item.id}</td>
-                  <td className="border p-2">{item.full_name}</td>
-                  <td className="border p-2">{item.question}</td>
-                  <td className="border p-2">{item.answer}</td>
+          <div>
+            <table className="min-w-full table-auto border-collapse border border-gray-300">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="border-b px-4 py-2 text-left">ID</th>
+                  <th className="border-b px-4 py-2 text-left">使用者名稱</th>
+                  <th className="border-b px-4 py-2 text-left">問題</th>
+                  <th className="border-b px-4 py-2 text-left">回應</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {data.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-100">
+                    <td className="border-b px-4 py-2">{item.id}</td>
+                    <td className="border-b px-4 py-2">{item.full_name}</td>
+                    <td className="border-b px-4 py-2">{item.question}</td>
+                    <td className="border-b px-4 py-2">{item.answer}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* 下載 Excel 按鈕 */}
+            <button
+              className="mt-4 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+              onClick={downloadExcel}
+            >
+              📥 下載 Excel
+            </button>
+          </div>
         )}
         <button
           className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
