@@ -10,7 +10,7 @@ export default function Read() {
 
   // 取得資料
   useEffect(() => {
-    fetch("http://brainmaxs.zeabur.app/get_test_results") // 從後端讀取資料
+    fetch("https://brainmaxs.zeabur.app/get_test_results") // 更新為遠程 API
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
@@ -28,7 +28,15 @@ export default function Read() {
 
   // 下載 Excel 檔案
   const downloadExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(data); // 把資料轉換成工作表
+    // 若需要處理嵌套資料結構，可以在此處理
+    const flattenedData = data.map(item => ({
+      id: item.id,
+      full_name: item.full_name, // 假設 full_name 是一個字段
+      question: item.question,
+      answer: item.answer,
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(flattenedData); // 把資料轉換成工作表
     const wb = XLSX.utils.book_new(); // 創建一個新的工作簿
     XLSX.utils.book_append_sheet(wb, ws, "Data"); // 把工作表添加到工作簿
     XLSX.writeFile(wb, "test_results.xlsx"); // 下載為 Excel 文件
