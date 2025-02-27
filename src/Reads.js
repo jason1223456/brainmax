@@ -10,7 +10,7 @@ export default function Read() {
 
   // 取得資料
   useEffect(() => {
-    fetch("http://brainmax.zeabur.app/get_test_results") // 從後端讀取資料
+    fetch("http://brainmaxs.zeabur.app/get_test_results") // 從後端讀取資料
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
