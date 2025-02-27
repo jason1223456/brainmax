@@ -11,7 +11,7 @@ export default function LoginPage() {
     setError(""); // 清除錯誤訊息
 
     try {
-      const response = await fetch("http://brainmax.zeabur.app/login", {
+      const response = await fetch("https://brainmaxs.zeabur.app/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
