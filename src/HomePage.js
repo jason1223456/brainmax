@@ -13,7 +13,16 @@ export default function HomePage() {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [lastUserMessage, setLastUserMessage] = useState("");
   const [lastBotResponse, setLastBotResponse] = useState("");
+  const [selectedModels, setSelectedModels] = useState([]); // 儲存選中的模型
   const chatEndRef = useRef(null);
+
+  const AVAILABLE_MODELS = {
+    "1": "openai/gpt-4o",
+    "2": "anthropic/claude-3.7-sonnet:beta",
+    "3": "perplexity/sonar-deep-research",
+    "4": "google/gemini-flash-1.5",
+    "5": "deepseek/deepseek-r1:free"
+  };
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -27,16 +36,24 @@ export default function HomePage() {
     const userMessage = input;
     setInput("");
 
+    if (selectedModels.length === 0) {
+      alert("⚠️ 請選擇至少一個模型！");
+      return;
+    }
+
     try {
       const response = await fetch("https://brainmaxs.zeabur.app/generate_copy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: userMessage }),
+        body: JSON.stringify({
+          prompt: userMessage,
+          models: selectedModels // 傳送選中的模型 ID
+        }),
       });
 
       const data = await response.json();
       if (data.success) {
-        const botText = data.generated_copy[0].text;
+        const botText = data.generated_results[AVAILABLE_MODELS[selectedModels[0]]]; // 假設只選一個模型顯示對應回應
         setMessages((prev) => [...prev, { text: botText, sender: "bot" }]);
         setLastBotResponse(botText);
       } else {
@@ -92,6 +109,16 @@ export default function HomePage() {
     }
   };
 
+  // 處理模型選擇
+  const handleModelChange = (event) => {
+    const modelId = event.target.value;
+    if (event.target.checked) {
+      setSelectedModels((prev) => [...prev, modelId]);
+    } else {
+      setSelectedModels((prev) => prev.filter((id) => id !== modelId));
+    }
+  };
+
   return (
     <div className="flex h-screen bg-gray-100">
       {/* 側邊選單 */}
@@ -144,6 +171,24 @@ export default function HomePage() {
               </div>
             ))}
             <div ref={chatEndRef} />
+          </div>
+
+          {/* 模型選擇區域 */}
+          <div className="p-4 bg-white shadow-md">
+            <h3 className="text-lg font-bold">選擇模型</h3>
+            <div className="flex flex-wrap gap-4">
+              {Object.entries(AVAILABLE_MODELS).map(([key, model]) => (
+                <label key={key} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    value={key}
+                    onChange={handleModelChange}
+                    className="h-5 w-5"
+                  />
+                  {model}
+                </label>
+              ))}
+            </div>
           </div>
 
           {/* 訊息輸入框 */}
