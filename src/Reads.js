@@ -12,7 +12,7 @@ export default function Read() {
   // 取得資料
   const fetchData = (searchQuery = "") => {
     setLoading(true); // 讓資料加載狀態為 true
-    fetch(`http://127.0.0.1:5001/get_test_results?search=${searchQuery}`) // 帶上搜尋參數
+    fetch(`https://brainmaxs.zeabur.app/get_test_results?search=${searchQuery}`) // 帶上搜尋參數
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
