@@ -244,33 +244,39 @@ export default function HomePage() {
 
       {/* 儲存對話的彈出視窗 */}
       {showSaveModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[500px]">
-            <h3 className="text-lg font-semibold mb-4">確認儲存對話</h3>
-            <div className="flex space-x-4">
-              <div className="flex-1 p-3 border rounded-md bg-gray-100">
-                <h4 className="font-bold">📌 問題：</h4>
-                <p>{lastUserMessage}</p>
-              </div>
-              <div className="flex-1 p-3 border rounded-md bg-gray-100">
-                <h4 className="font-bold">🤖 回應：</h4>
-                <p>{lastBotResponse}</p>
-              </div>
-            </div>
-            <div className="mt-4 flex justify-end">
-              <button className="mr-4 text-gray-600" onClick={closeSaveModal}>
-                取消
-              </button>
-              <button
-                className="bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700"
-                onClick={confirmSave}
-              >
-                確定儲存
-              </button>
-            </div>
-          </div>
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl">
+      <h3 className="text-lg font-semibold mb-4">確認儲存對話</h3>
+      
+      <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+        <div className="flex-1 p-3 border rounded-md bg-gray-100 overflow-y-auto max-h-40">
+          <h4 className="font-bold mb-2">📌 問題：</h4>
+          <p className="whitespace-pre-wrap break-words">{lastUserMessage}</p>
         </div>
-      )}
+        <div className="flex-1 p-3 border rounded-md bg-gray-100 overflow-y-auto max-h-40">
+          <h4 className="font-bold mb-2">🤖 回應：</h4>
+          <p className="whitespace-pre-wrap break-words">{lastBotResponse}</p>
+        </div>
+      </div>
+
+      <div className="mt-6 flex justify-end">
+        <button
+          className="mr-4 text-gray-600 hover:underline"
+          onClick={closeSaveModal}
+        >
+          取消
+        </button>
+        <button
+          className="bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700"
+          onClick={confirmSave}
+        >
+          確定儲存
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
