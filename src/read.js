@@ -7,17 +7,16 @@ export default function Read() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 取得資料
   useEffect(() => {
     fetch('https://brainmaxs.zeabur.app/get_test_results')
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          // 將資料依 id 降序排序，最新資料排在最前面
+          // 依照 id 降序排序，最新儲存的資料會在第一筆
           const sortedData = result.data.slice().sort((a, b) => b.id - a.id);
           setData(sortedData);
         } else {
-          setError(result.message); // 顯示錯誤訊息
+          setError(result.message);
         }
         setLoading(false);
       })
@@ -25,7 +24,7 @@ export default function Read() {
         setError("❌ 無法獲取資料，請稍後再試！");
         setLoading(false);
       });
-  }, []); // 僅在首次加載時請求資料
+  }, []);
 
   return (
     <div className="flex flex-col h-screen items-center justify-center bg-gray-100 p-6">
