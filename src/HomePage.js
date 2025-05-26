@@ -41,7 +41,6 @@ export default function HomePage() {
       return;
     }
 
-    // 產生完整上下文對話文字
     const conversationText = newMessages
       .map((msg) =>
         `${msg.sender === "user" ? "User" : "Assistant"}: ${msg.text}`
@@ -154,8 +153,16 @@ export default function HomePage() {
       {/* 聊天區域 */}
       <div className="flex flex-1 justify-center items-center">
         <div className="flex flex-col w-full max-w-2xl h-[80vh] bg-white shadow-lg rounded-2xl overflow-hidden">
+          {/* Logo + 聊天室標題 */}
           <header className="bg-blue-600 text-white p-4 flex justify-between items-center">
-            <h1 className="text-lg font-bold">💬 聊天室</h1>
+            <div className="flex items-center gap-3">
+              <img
+                src="/LOGO_Brainmax.png"
+                alt="Brainmax Logo"
+                className="w-10 h-10 object-contain"
+              />
+              <h1 className="text-lg font-bold">💬 聊天室</h1>
+            </div>
             {fullName && <p className="text-sm">👤 {fullName}</p>}
           </header>
 
@@ -167,7 +174,7 @@ export default function HomePage() {
               >
                 <div className="relative group">
                   <div
-                    className={`p-3 rounded-2xl max-w-xs shadow-md ${
+                    className={`p-3 rounded-2xl max-w-xs shadow-md whitespace-pre-wrap break-words ${
                       msg.sender === "user"
                         ? "bg-blue-500 text-white rounded-br-none"
                         : "bg-gray-200 text-gray-800 rounded-bl-none"
@@ -244,39 +251,38 @@ export default function HomePage() {
 
       {/* 儲存對話的彈出視窗 */}
       {showSaveModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl">
-      <h3 className="text-lg font-semibold mb-4">確認儲存對話</h3>
-      
-      <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-        <div className="flex-1 p-3 border rounded-md bg-gray-100 overflow-y-auto max-h-40">
-          <h4 className="font-bold mb-2">📌 問題：</h4>
-          <p className="whitespace-pre-wrap break-words">{lastUserMessage}</p>
-        </div>
-        <div className="flex-1 p-3 border rounded-md bg-gray-100 overflow-y-auto max-h-40">
-          <h4 className="font-bold mb-2">🤖 回應：</h4>
-          <p className="whitespace-pre-wrap break-words">{lastBotResponse}</p>
-        </div>
-      </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl">
+            <h3 className="text-lg font-semibold mb-4">確認儲存對話</h3>
 
-      <div className="mt-6 flex justify-end">
-        <button
-          className="mr-4 text-gray-600 hover:underline"
-          onClick={closeSaveModal}
-        >
-          取消
-        </button>
-        <button
-          className="bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700"
-          onClick={confirmSave}
-        >
-          確定儲存
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+              <div className="flex-1 p-3 border rounded-md bg-gray-100 overflow-y-auto max-h-40">
+                <h4 className="font-bold mb-2">📌 問題：</h4>
+                <p className="whitespace-pre-wrap break-words">{lastUserMessage}</p>
+              </div>
+              <div className="flex-1 p-3 border rounded-md bg-gray-100 overflow-y-auto max-h-40">
+                <h4 className="font-bold mb-2">🤖 回應：</h4>
+                <p className="whitespace-pre-wrap break-words">{lastBotResponse}</p>
+              </div>
+            </div>
 
+            <div className="mt-6 flex justify-end">
+              <button
+                className="mr-4 text-gray-600 hover:underline"
+                onClick={closeSaveModal}
+              >
+                取消
+              </button>
+              <button
+                className="bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700"
+                onClick={confirmSave}
+              >
+                確定儲存
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
