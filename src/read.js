@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Read() {
   const navigate = useNavigate();
-  const [data, setData] = useState([]); // 用來存放資料庫數據
+  const [data, setData] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -12,8 +12,12 @@ export default function Read() {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          // 依照 id 降序排序，最新儲存的資料會在第一筆
-          const sortedData = result.data.slice().sort((a, b) => b.id - a.id);
+          console.log("原始資料", result.data);
+          // 先把 id 轉成數字，再降序排列
+          const sortedData = result.data.slice().sort((a, b) => {
+            return Number(b.id) - Number(a.id);
+          });
+          console.log("排序後資料", sortedData);
           setData(sortedData);
         } else {
           setError(result.message);
