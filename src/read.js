@@ -3,21 +3,17 @@ import { useNavigate } from "react-router-dom";
 
 export default function Read() {
   const navigate = useNavigate();
-  const [data, setData] = useState([]); 
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('https://brainmaxs.zeabur.app/get_test_results')
+    fetch("https://brainmaxs.zeabur.app/get_test_results")
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          console.log("原始資料", result.data);
-          // 先把 id 轉成數字，再降序排列
-          const sortedData = result.data.slice().sort((a, b) => {
-            return Number(b.id) - Number(a.id);
-          });
-          console.log("排序後資料", sortedData);
+          // ✅ 確保依 id 降序排列（最新的資料在前面）
+          const sortedData = result.data.slice().sort((a, b) => Number(b.id) - Number(a.id));
           setData(sortedData);
         } else {
           setError(result.message);
