@@ -4,10 +4,44 @@ import { useNavigate } from "react-router-dom";
 export default function UploadPage() {
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      alert("請先選擇檔案");
+      return;
+    }
+
+    setUploading(true);
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append("uploader", "root"); // 你可以改成動態的使用者名稱或ID
+
+    try {
+      const response = await fetch("https://brainmaxs.zeabur.app/upload_file", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert("檔案上傳成功！");
+        setSelectedFile(null); // 清空選擇
+      } else {
+        alert("上傳失敗：" + result.message);
+      }
+    } catch (error) {
+      alert("上傳錯誤：" + error.message);
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -18,24 +52,31 @@ export default function UploadPage() {
           type="file"
           className="mb-4 border p-2 rounded w-full"
           onChange={handleFileChange}
+          disabled={uploading}
         />
         {selectedFile && (
           <p className="text-gray-600">已選擇檔案：{selectedFile.name}</p>
         )}
-        <div className="mt-6 flex space-x-4">
+        <div className="mt-6 flex space-x-4 justify-center">
           <button
             className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
             onClick={() => navigate("/home")}
+            disabled={uploading}
           >
             🔙 返回首頁
           </button>
           <button
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            className={`bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 ${
+              uploading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            onClick={handleUpload}
+            disabled={uploading}
           >
-            🚀 上傳檔案（未連接後端）
+            {uploading ? "上傳中..." : "🚀 上傳檔案"}
           </button>
         </div>
       </div>
     </div>
   );
 }
+
