@@ -152,48 +152,49 @@ export default function HomePage() {
 
       {/* 聊天區域 */}
       <div className="flex flex-1 justify-center items-center">
-        <div className="flex flex-col w-full max-w-2xl h-[80vh] bg-white shadow-lg rounded-2xl overflow-hidden">
-          {/* Logo + 聊天室標題 */}
-          <header className="bg-blue-600 text-white p-4 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <img
-                src="/LOGO_Brainmax.png"
-                alt="Brainmax Logo"
-                className="w-10 h-10 object-contain"
-              />
-              <h1 className="text-lg font-bold">💬 聊天室</h1>
-            </div>
-            {fullName && <p className="text-sm">👤 {fullName}</p>}
-          </header>
+      <div className="flex flex-col flex-1 h-[80vh] overflow-hidden">
+  {/* Logo + 聊天室標題 */}
+  <header className="bg-blue-600 text-white p-4 flex justify-between items-center">
+    <div className="flex items-center gap-3">
+      <img
+        src="/LOGO_Brainmax.png"
+        alt="Brainmax Logo"
+        className="w-10 h-10 object-contain"
+      />
+      <h1 className="text-lg font-bold">💬 聊天室</h1>
+    </div>
+    {fullName && <p className="text-sm">👤 {fullName}</p>}
+  </header>
 
-          <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex mb-4 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div className="relative group">
-                  <div
-                    className={`p-3 rounded-2xl max-w-xs shadow-md whitespace-pre-wrap break-words ${
-                      msg.sender === "user"
-                        ? "bg-blue-500 text-white rounded-br-none"
-                        : "bg-gray-200 text-gray-800 rounded-bl-none"
-                    }`}
-                  >
-                    {msg.text}
-                  </div>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(msg.text)}
-                    className="absolute top-0 right-0 mt-1 mr-1 opacity-0 group-hover:opacity-100 text-xs bg-black text-white px-2 py-1 rounded"
-                    title="複製"
-                  >
-                    複製
-                  </button>
-                </div>
-              </div>
-            ))}
-            <div ref={chatEndRef} />
+  <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
+    {messages.map((msg, index) => (
+      <div
+        key={index}
+        className={`flex mb-4 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+      >
+        <div className="relative group">
+          <div
+            className={`p-3 rounded-2xl whitespace-pre-wrap break-words ${
+              msg.sender === "user"
+                ? "bg-blue-500 text-white rounded-br-none max-w-full"
+                : "bg-gray-200 text-gray-800 rounded-bl-none max-w-full"
+            }`}
+          >
+            {msg.text}
           </div>
+          <button
+            onClick={() => navigator.clipboard.writeText(msg.text)}
+            className="absolute top-0 right-0 mt-1 mr-1 opacity-0 group-hover:opacity-100 text-xs bg-black text-white px-2 py-1 rounded"
+            title="複製"
+          >
+            複製
+          </button>
+        </div>
+      </div>
+    ))}
+    <div ref={chatEndRef} />
+  </div>
+
 
           {/* 模型選擇區域 */}
           <div className="p-4 bg-white shadow-md">
