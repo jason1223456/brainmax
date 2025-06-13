@@ -12,17 +12,25 @@ export default function Read() {
 
   const fetchData = (searchQuery = "") => {
     setLoading(true);
-    fetch(`https://brainmaxs.zeabur.app/get_test_results?search=${searchQuery}`)
+    setError(null);
+
+    const encoded = encodeURIComponent(searchQuery.trim());
+    const url = searchQuery
+      ? `https://brainmaxs.zeabur.app/get_test_results?q=${encoded}`
+      : `https://brainmaxs.zeabur.app/get_test_results`;
+
+    fetch(url)
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
+          // 確保有必要欄位再呈現
           const filtered = result.data.filter(
             (item) => item.full_name && item.question && item.answer
           );
           setData(filtered);
           setCurrentIndex(0); // 回到第一筆
         } else {
-          setError(result.message);
+          setError(result.message || "⚠️ 查詢失敗");
         }
         setLoading(false);
       })
@@ -37,11 +45,16 @@ export default function Read() {
   }, []);
 
   const handleSearchChange = (e) => {
-    setSearch(e.target.value);
-    fetchData(e.target.value);
+    const val = e.target.value;
+    setSearch(val);
+    fetchData(val);
   };
 
   const exportToExcel = () => {
+    if (data.length === 0) {
+      alert("目前沒有資料可匯出");
+      return;
+    }
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Data");
@@ -114,6 +127,10 @@ export default function Read() {
               📥 匯出所有資料為 Excel
             </button>
           </>
+        )}
+
+        {!loading && !error && data.length === 0 && (
+          <p className="text-gray-600 text-center mt-8">😕 查無資料</p>
         )}
 
         <button
