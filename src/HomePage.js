@@ -130,125 +130,122 @@ export default function HomePage() {
     <div className="flex h-screen bg-gray-100">
       {/* 側邊選單 */}
       <aside className="w-64 bg-gray-900 text-white p-5 flex flex-col">
-        <h2 className="text-xl font-bold mb-6">選單</h2>
+        {/* Logo 區 */}
+        <div className="flex items-center mb-6">
+          <img
+            src="/LOGO_Brainmax.png"
+            alt="Brainmax Logo"
+            className="w-10 h-10 mr-2 object-contain"
+          />
+          <h2 className="text-xl font-bold">Brainmax</h2>
+        </div>
+
         <ul className="flex-1">
           <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded">🏠 首頁</li>
           <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded">⚙ 設定</li>
-          <li
-            className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded"
-            onClick={() => navigate("/newpage")}
-          >
+          <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded" onClick={() => navigate("/newpage")}>
             📄 上傳檔案
           </li>
-          <li
-            className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded"
-            onClick={() => navigate("/Reads")}
-          >
+          <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded" onClick={() => navigate("/AiReport")}>
+            📄 Ai分析文檔
+          </li>
+          <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded" onClick={() => navigate("/Reads")}>
             📄 歷史紀錄
           </li>
         </ul>
-        <button className="mt-auto bg-red-600 p-3 rounded-lg hover:bg-red-700">
-          🚪 登出
-        </button>
+        <button className="mt-auto bg-red-600 p-3 rounded-lg hover:bg-red-700">🚪 登出</button>
       </aside>
 
-      {/* 聊天區域 */}
-      <div className="flex flex-1 justify-center items-center">
-        <div className="flex flex-col flex-1 h-[80vh] overflow-hidden">
-          {/* Logo + 聊天室標題 */}
-          <header className="bg-blue-600 text-white p-4 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <img
-                src="/LOGO_Brainmax.png"
-                alt="Brainmax Logo"
-                className="w-10 h-10 object-contain"
-              />
-              <h1 className="text-lg font-bold">💬 聊天室</h1>
-            </div>
-            {fullName && <p className="text-sm">👤 {fullName}</p>}
-          </header>
-
-          <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex mb-4 ${
-                  msg.sender === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
-                <div className="relative group">
-                  <div
-                    className={`p-3 rounded-2xl whitespace-pre-wrap break-words ${
-                      msg.sender === "user"
-                        ? "bg-blue-500 text-white rounded-br-none max-w-full"
-                        : "bg-gray-200 text-gray-800 rounded-bl-none max-w-full"
-                    }`}
-                  >
-                    {msg.text}
-                  </div>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(msg.text)}
-                    className="absolute top-0 right-0 mt-1 mr-1 opacity-0 group-hover:opacity-100 text-xs bg-black text-white px-2 py-1 rounded"
-                    title="複製"
-                  >
-                    複製
-                  </button>
-                </div>
-              </div>
-            ))}
-            <div ref={chatEndRef} />
-          </div>
-
-          {/* 模型選擇區域 */}
-          <div className="p-4 bg-white shadow-md">
-            <h3 className="text-lg font-bold">選擇模型</h3>
-            <div className="flex flex-wrap gap-4">
-              {Object.entries(AVAILABLE_MODELS).map(([key, model]) => (
-                <label key={key} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    value={key}
-                    onChange={handleModelChange}
-                    className="h-5 w-5"
-                  />
-                  {model}
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* 訊息輸入框 */}
-          <div className="p-4 bg-white flex flex-col shadow-md">
-            <textarea
-              rows={1}
-              className="flex-1 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              placeholder="輸入訊息（最多1000字）..."
-              value={input}
-              maxLength={1000}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-                  e.preventDefault();
-                  sendMessage();
-                }
-              }}
+      {/* 右側聊天區域滿版 */}
+      <div className="flex flex-1 flex-col h-screen overflow-hidden">
+        <header className="bg-blue-600 text-white p-4 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <img
+              src="/LOGO_Brainmax.png"
+              alt="Brainmax Logo"
+              className="w-10 h-10 object-contain"
             />
-            <p className="text-sm text-gray-500 ml-3 mt-1">{input.length}/1000</p>
+            <h1 className="text-lg font-bold">💬 聊天室</h1>
+          </div>
+          {fullName && <p className="text-sm">👤 {fullName}</p>}
+        </header>
 
-            <div className="mt-3 flex justify-end">
-              <button
-                className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700"
-                onClick={sendMessage}
-              >
-                送出
-              </button>
-              <button
-                className="ml-3 bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700"
-                onClick={openSaveModal}
-              >
-                保存
-              </button>
+        <div className="flex-1 overflow-y-auto p-6 bg-gray-100 w-full">
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`flex mb-4 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+            >
+              <div className="relative group">
+                <div
+                  className={`p-3 rounded-2xl whitespace-pre-wrap break-words ${
+                    msg.sender === "user"
+                      ? "bg-blue-500 text-white rounded-br-none max-w-full"
+                      : "bg-gray-200 text-gray-800 rounded-bl-none max-w-full"
+                  }`}
+                >
+                  {msg.text}
+                </div>
+                <button
+                  onClick={() => navigator.clipboard.writeText(msg.text)}
+                  className="absolute top-0 right-0 mt-1 mr-1 opacity-0 group-hover:opacity-100 text-xs bg-black text-white px-2 py-1 rounded"
+                  title="複製"
+                >
+                  複製
+                </button>
+              </div>
             </div>
+          ))}
+          <div ref={chatEndRef} />
+        </div>
+
+        <div className="p-4 bg-white shadow-md">
+          <h3 className="text-lg font-bold">選擇模型</h3>
+          <div className="flex flex-wrap gap-4">
+            {Object.entries(AVAILABLE_MODELS).map(([key, model]) => (
+              <label key={key} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  value={key}
+                  onChange={handleModelChange}
+                  className="h-5 w-5"
+                />
+                {model}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="p-4 bg-white flex flex-col shadow-md">
+          <textarea
+            rows={1}
+            className="w-full p-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            placeholder="輸入訊息（最多1000字）..."
+            value={input}
+            maxLength={1000}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
+          />
+          <p className="text-sm text-gray-500 ml-3 mt-1">{input.length}/1000</p>
+
+          <div className="mt-3 flex justify-end">
+            <button
+              className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700"
+              onClick={sendMessage}
+            >
+              送出
+            </button>
+            <button
+              className="ml-3 bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700"
+              onClick={openSaveModal}
+            >
+              保存
+            </button>
           </div>
         </div>
       </div>
@@ -271,10 +268,7 @@ export default function HomePage() {
             </div>
 
             <div className="mt-6 flex justify-end">
-              <button
-                className="mr-4 text-gray-600 hover:underline"
-                onClick={closeSaveModal}
-              >
+              <button className="mr-4 text-gray-600 hover:underline" onClick={closeSaveModal}>
                 取消
               </button>
               <button
