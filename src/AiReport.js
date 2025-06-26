@@ -11,7 +11,7 @@ function PdfScanEditor() {
 
   // 載入檔案列表，並載入已掃描文字（若有）
   useEffect(() => {
-    fetch('http://localhost:5003/list_uploaded_files')
+    fetch('https://brainmaxs.zeabur.app/list_uploaded_files')
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -57,7 +57,7 @@ function PdfScanEditor() {
     setText('');
     try {
       const id = Number(selectedId);
-      const res = await fetch(`http://localhost:5003/scan_pdf_ocr/${id}`);
+      const res = await fetch(`https://brainmaxs.zeabur.app/scan_pdf_ocr/${id}`);
       const data = await res.json();
       if (data.success) {
         setText(data.content);
@@ -82,7 +82,7 @@ function PdfScanEditor() {
     try {
       const id = Number(selectedId);
       // 儲存掃描文字
-      const saveRes = await fetch('http://localhost:5003/save_scanned_text', {
+      const saveRes = await fetch('https://brainmaxs.zeabur.app/save_scanned_text', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ file_id: id, scanned_text: text }),
@@ -96,7 +96,7 @@ function PdfScanEditor() {
       setMessage('儲存成功，開始 AI 分析...');
 
       // 呼叫 AI 分析 (用儲存後的文字當 prompt)
-      const aiRes = await fetch('http://localhost:5003/generate_copy', {
+      const aiRes = await fetch('https://brainmaxs.zeabur.app/generate_copy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
