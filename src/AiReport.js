@@ -9,7 +9,6 @@ function PdfScanEditor() {
   const [message, setMessage] = useState('');
   const [aiResult, setAiResult] = useState('');
 
-  // 載入檔案列表，並載入已掃描文字（若有）
   useEffect(() => {
     fetch('https://brainmaxs.zeabur.app/list_uploaded_files')
       .then(res => res.json())
@@ -23,7 +22,6 @@ function PdfScanEditor() {
       .catch(err => setMessage('網路錯誤: ' + err.message));
   }, []);
 
-  // 選擇檔案時，取得該檔案的已掃描文字（如果有）
   useEffect(() => {
     if (!selectedId) {
       setText('');
@@ -31,12 +29,10 @@ function PdfScanEditor() {
       setMessage('');
       return;
     }
-    // 從 files 陣列中找到對應檔案 (這裡需要修改API回傳scanned_text欄位或另查API)
-    // 假設你的 /list_uploaded_files 也回傳 scanned_text
     const file = files.find(f => f.id === Number(selectedId));
     if (file && file.scanned_text) {
       setText(file.scanned_text);
-      setAiResult(''); // 清空 AI 分析結果，讓使用者選擇是否再分析
+      setAiResult('');
       setMessage('');
     } else {
       setText('');
@@ -45,7 +41,6 @@ function PdfScanEditor() {
     }
   }, [selectedId, files]);
 
-  // 掃描 PDF
   const handleScan = async () => {
     if (!selectedId) {
       alert('請先選擇一個 PDF');
@@ -70,7 +65,6 @@ function PdfScanEditor() {
     setLoading(false);
   };
 
-  // 儲存編輯後文字，並呼叫 AI 分析
   const handleSave = async () => {
     if (!selectedId) {
       alert('請先選擇一個 PDF');
@@ -81,7 +75,6 @@ function PdfScanEditor() {
     setAiResult('');
     try {
       const id = Number(selectedId);
-      // 儲存掃描文字
       const saveRes = await fetch('https://brainmaxs.zeabur.app/save_scanned_text', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -95,13 +88,12 @@ function PdfScanEditor() {
       }
       setMessage('儲存成功，開始 AI 分析...');
 
-      // 呼叫 AI 分析 (用儲存後的文字當 prompt)
       const aiRes = await fetch('https://brainmaxs.zeabur.app/generate_copy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: text,
-          models: ['1'] // 選擇一個模型，比如 'openai/gpt-4o'
+          models: ['1'],
         }),
       });
       const aiData = await aiRes.json();
@@ -117,17 +109,99 @@ function PdfScanEditor() {
     setSaving(false);
   };
 
-  return (
-    <div style={{ padding: 20, fontFamily: 'Arial, sans-serif' }}>
-      <h3>PDF 掃描編輯器 + AI 分析</h3>
+  const styles = {
+    container: {
+      maxWidth: '960px',
+      margin: '30px auto',
+      padding: '24px',
+      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+      backgroundColor: '#ffffff',
+      border: '1px solid #e0e0e0',
+      borderRadius: '12px',
+      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)',
+    },
+    title: {
+      fontSize: '1.5rem',
+      fontWeight: 600,
+      marginBottom: '20px',
+      color: '#333',
+    },
+    row: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      marginBottom: '16px',
+    },
+    select: {
+      minWidth: '280px',
+      padding: '6px 10px',
+      fontSize: '1rem',
+      border: '1px solid #ccc',
+      borderRadius: '6px',
+    },
+    button: {
+      padding: '6px 16px',
+      fontSize: '0.95rem',
+      backgroundColor: '#007bff',
+      color: 'white',
+      border: 'none',
+      borderRadius: '6px',
+      cursor: 'pointer',
+      transition: 'background-color 0.2s ease-in-out',
+    },
+    buttonDisabled: {
+      backgroundColor: '#ccc',
+      cursor: 'not-allowed',
+    },
+    buttonGreen: {
+      backgroundColor: '#28a745',
+    },
+    textarea: {
+      width: '100%',
+      height: '300px',
+      padding: '12px',
+      fontSize: '1rem',
+      lineHeight: 1.5,
+      border: '1px solid #ccc',
+      borderRadius: '6px',
+      resize: 'vertical',
+      boxSizing: 'border-box',
+    },
+    message: {
+      marginTop: '12px',
+      fontWeight: 500,
+    },
+    success: {
+      color: 'green',
+    },
+    error: {
+      color: 'red',
+    },
+    resultBox: {
+      marginTop: '24px',
+      padding: '16px',
+      backgroundColor: '#f6f8fa',
+      border: '1px solid #dcdcdc',
+      borderRadius: '6px',
+    },
+    resultText: {
+      whiteSpace: 'pre-wrap',
+      fontFamily: "'Courier New', monospace",
+      fontSize: '0.95rem',
+    },
+  };
 
-      <div style={{ marginBottom: 10 }}>
+  return (
+    <div style={styles.container}>
+      <h3 style={styles.title}>PDF 掃描編輯器 + AI 分析</h3>
+
+      <div style={styles.row}>
         <label htmlFor="fileSelect">選擇 PDF 檔案：</label>
         <select
           id="fileSelect"
           value={selectedId}
           onChange={e => setSelectedId(e.target.value)}
-          style={{ marginLeft: 10, minWidth: 250 }}
+          style={styles.select}
         >
           <option value="">請選擇 PDF 檔案</option>
           {files.map(f => (
@@ -140,42 +214,53 @@ function PdfScanEditor() {
         <button
           onClick={handleScan}
           disabled={loading || !selectedId}
-          style={{ marginLeft: 10, padding: '4px 12px' }}
+          style={{
+            ...styles.button,
+            ...(loading || !selectedId ? styles.buttonDisabled : {}),
+          }}
         >
           {loading ? '掃描中...' : '開始掃描'}
         </button>
       </div>
 
-      <div>
-        <textarea
-          rows={15}
-          cols={80}
-          value={text}
-          onChange={e => setText(e.target.value)}
-          disabled={loading}
-          placeholder="掃描結果會出現在這裡，可自行編輯..."
-          style={{ fontSize: 14, padding: 10, width: '100%', boxSizing: 'border-box' }}
-        />
-      </div>
+      <textarea
+        style={styles.textarea}
+        value={text}
+        onChange={e => setText(e.target.value)}
+        disabled={loading}
+        placeholder="掃描結果會出現在這裡，可自行編輯..."
+      />
 
       <button
         onClick={handleSave}
         disabled={saving || !selectedId}
-        style={{ marginTop: 10, padding: '6px 20px' }}
+        style={{
+          ...styles.button,
+          ...styles.buttonGreen,
+          ...(saving || !selectedId ? styles.buttonDisabled : {}),
+          marginTop: '16px',
+        }}
       >
         {saving ? '儲存中並分析中...' : '儲存並進行 AI 分析'}
       </button>
 
       {message && (
-        <p style={{ marginTop: 10, color: message.startsWith('儲存成功') || message.startsWith('AI 分析完成') ? 'green' : 'red' }}>
+        <p
+          style={{
+            ...styles.message,
+            ...(message.startsWith('儲存成功') || message.startsWith('AI 分析完成')
+              ? styles.success
+              : styles.error),
+          }}
+        >
           {message}
         </p>
       )}
 
       {aiResult && (
-        <div style={{ marginTop: 20, padding: 15, border: '1px solid #ccc', borderRadius: 5, backgroundColor: '#f9f9f9' }}>
+        <div style={styles.resultBox}>
           <h4>AI 分析結果：</h4>
-          <pre style={{ whiteSpace: 'pre-wrap', fontSize: 14 }}>{aiResult}</pre>
+          <pre style={styles.resultText}>{aiResult}</pre>
         </div>
       )}
     </div>
