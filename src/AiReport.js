@@ -129,7 +129,7 @@ function PdfScanEditor() {
   };
 
   const handleGoHome = () => {
-    window.location.href = 'https://brainmax.zeabur.app/home';
+    window.location.href = 'https://brainmaxsx.zeabur.app/home';
   };
 
   const styles = {
