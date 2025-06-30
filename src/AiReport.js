@@ -9,6 +9,7 @@ function PdfScanEditor() {
   const [message, setMessage] = useState('');
   const [aiResult, setAiResult] = useState('');
   const [copySuccess, setCopySuccess] = useState('');
+  const [copyActive, setCopyActive] = useState(false);
 
   useEffect(() => {
     fetch('https://brainmaxs.zeabur.app/list_uploaded_files')
@@ -114,8 +115,12 @@ function PdfScanEditor() {
     if (!aiResult) return;
     navigator.clipboard.writeText(aiResult)
       .then(() => {
+        setCopyActive(true);
         setCopySuccess('已複製到剪貼簿！');
-        setTimeout(() => setCopySuccess(''), 2000);
+        setTimeout(() => {
+          setCopyActive(false);
+          setCopySuccess('');
+        }, 1500);
       })
       .catch(() => {
         setCopySuccess('複製失敗，請手動複製');
@@ -211,10 +216,6 @@ function PdfScanEditor() {
     resultTitle: {
       margin: 0,
     },
-    resultButtons: {
-      display: 'flex',
-      gap: '8px',
-    },
     resultText: {
       whiteSpace: 'pre-wrap',
       fontFamily: "'Courier New', monospace",
@@ -228,6 +229,10 @@ function PdfScanEditor() {
       backgroundColor: '#007bff',
       color: 'white',
       cursor: 'pointer',
+      transition: 'background-color 0.3s ease',
+    },
+    copyButtonActive: {
+      backgroundColor: '#28a745',
     },
     homeButton: {
       padding: '6px 12px',
@@ -241,8 +246,9 @@ function PdfScanEditor() {
     saveRow: {
       marginTop: '16px',
       display: 'flex',
-      gap: '12px',
+      justifyContent: 'space-between',
       alignItems: 'center',
+      flexWrap: 'wrap',
     }
   };
 
@@ -279,60 +285,55 @@ function PdfScanEditor() {
       </div>
 
       <textarea
-        style={styles.textarea}
         value={text}
         onChange={e => setText(e.target.value)}
-        disabled={loading}
-        placeholder="掃描結果會出現在這裡，可自行編輯..."
+        style={styles.textarea}
+        placeholder="掃描結果會出現在這裡，您可以手動修改..."
       />
 
       <div style={styles.saveRow}>
         <button
           onClick={handleSave}
-          disabled={saving || !selectedId}
+          disabled={saving || !selectedId || !text.trim()}
           style={{
             ...styles.button,
-            ...styles.buttonGreen,
-            ...(saving || !selectedId ? styles.buttonDisabled : {}),
+            ...(saving || !selectedId || !text.trim() ? styles.buttonDisabled : {}),
           }}
         >
-          {saving ? '儲存中並分析中...' : '儲存並進行 AI 分析'}
+          {saving ? '儲存中...' : '儲存並開始 AI 分析'}
         </button>
 
-        <button
-          onClick={handleGoHome}
-          style={styles.homeButton}
-          type="button"
-        >
-          回首頁
+        <button onClick={handleGoHome} style={styles.homeButton}>
+          返回首頁
         </button>
       </div>
-
-      {message && (
-        <p
-          style={{
-            ...styles.message,
-            ...(message.startsWith('儲存成功') || message.startsWith('AI 分析完成')
-              ? styles.success
-              : styles.error),
-          }}
-        >
-          {message}
-        </p>
-      )}
 
       {aiResult && (
         <div style={styles.resultBox}>
           <div style={styles.resultHeader}>
-            <h4 style={styles.resultTitle}>AI 分析結果：</h4>
-            <button onClick={handleCopy} style={styles.copyButton}>複製結果</button>
+            <h4 style={styles.resultTitle}>AI 分析結果</h4>
+            <button
+              onClick={handleCopy}
+              style={{
+                ...styles.copyButton,
+                ...(copyActive ? styles.copyButtonActive : {}),
+              }}
+            >
+              {copyActive ? '已複製！' : '複製結果'}
+            </button>
           </div>
           <pre style={styles.resultText}>{aiResult}</pre>
-          {copySuccess && (
-            <p style={{ marginTop: '8px', color: 'green', fontWeight: 'bold' }}>
-              {copySuccess}
-            </p>
-          )}
+        </div>
+      )}
+
+      {message && (
+        <div
+          style={{
+            ...styles.message,
+            ...(message.includes('失敗') ? styles.error : styles.success),
+          }}
+        >
+          {message}
         </div>
       )}
     </div>
