@@ -123,12 +123,8 @@ function PdfScanEditor() {
       });
   };
 
-  const handleReset = () => {
-    setSelectedId('');
-    setText('');
-    setAiResult('');
-    setMessage('');
-    setCopySuccess('');
+  const handleGoHome = () => {
+    window.location.href = 'https://brainmax.zeabur.app/home';
   };
 
   const styles = {
@@ -241,6 +237,12 @@ function PdfScanEditor() {
       backgroundColor: '#6c757d',
       color: 'white',
       cursor: 'pointer',
+    },
+    saveRow: {
+      marginTop: '16px',
+      display: 'flex',
+      gap: '12px',
+      alignItems: 'center',
     }
   };
 
@@ -284,18 +286,27 @@ function PdfScanEditor() {
         placeholder="掃描結果會出現在這裡，可自行編輯..."
       />
 
-      <button
-        onClick={handleSave}
-        disabled={saving || !selectedId}
-        style={{
-          ...styles.button,
-          ...styles.buttonGreen,
-          ...(saving || !selectedId ? styles.buttonDisabled : {}),
-          marginTop: '16px',
-        }}
-      >
-        {saving ? '儲存中並分析中...' : '儲存並進行 AI 分析'}
-      </button>
+      <div style={styles.saveRow}>
+        <button
+          onClick={handleSave}
+          disabled={saving || !selectedId}
+          style={{
+            ...styles.button,
+            ...styles.buttonGreen,
+            ...(saving || !selectedId ? styles.buttonDisabled : {}),
+          }}
+        >
+          {saving ? '儲存中並分析中...' : '儲存並進行 AI 分析'}
+        </button>
+
+        <button
+          onClick={handleGoHome}
+          style={styles.homeButton}
+          type="button"
+        >
+          回首頁
+        </button>
+      </div>
 
       {message && (
         <p
@@ -314,10 +325,7 @@ function PdfScanEditor() {
         <div style={styles.resultBox}>
           <div style={styles.resultHeader}>
             <h4 style={styles.resultTitle}>AI 分析結果：</h4>
-            <div style={styles.resultButtons}>
-              <button onClick={handleCopy} style={styles.copyButton}>複製結果</button>
-              <button onClick={handleReset} style={styles.homeButton}>回首頁</button>
-            </div>
+            <button onClick={handleCopy} style={styles.copyButton}>複製結果</button>
           </div>
           <pre style={styles.resultText}>{aiResult}</pre>
           {copySuccess && (
