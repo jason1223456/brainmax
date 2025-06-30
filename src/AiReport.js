@@ -8,6 +8,7 @@ function PdfScanEditor() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [aiResult, setAiResult] = useState('');
+  const [copySuccess, setCopySuccess] = useState('');
 
   useEffect(() => {
     fetch('https://brainmaxs.zeabur.app/list_uploaded_files')
@@ -109,6 +110,27 @@ function PdfScanEditor() {
     setSaving(false);
   };
 
+  const handleCopy = () => {
+    if (!aiResult) return;
+    navigator.clipboard.writeText(aiResult)
+      .then(() => {
+        setCopySuccess('已複製到剪貼簿！');
+        setTimeout(() => setCopySuccess(''), 2000);
+      })
+      .catch(() => {
+        setCopySuccess('複製失敗，請手動複製');
+        setTimeout(() => setCopySuccess(''), 2000);
+      });
+  };
+
+  const handleReset = () => {
+    setSelectedId('');
+    setText('');
+    setAiResult('');
+    setMessage('');
+    setCopySuccess('');
+  };
+
   const styles = {
     container: {
       maxWidth: '960px',
@@ -184,11 +206,42 @@ function PdfScanEditor() {
       border: '1px solid #dcdcdc',
       borderRadius: '6px',
     },
+    resultHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: '12px',
+    },
+    resultTitle: {
+      margin: 0,
+    },
+    resultButtons: {
+      display: 'flex',
+      gap: '8px',
+    },
     resultText: {
       whiteSpace: 'pre-wrap',
       fontFamily: "'Courier New', monospace",
       fontSize: '0.95rem',
     },
+    copyButton: {
+      padding: '6px 12px',
+      fontSize: '0.9rem',
+      borderRadius: '6px',
+      border: 'none',
+      backgroundColor: '#007bff',
+      color: 'white',
+      cursor: 'pointer',
+    },
+    homeButton: {
+      padding: '6px 12px',
+      fontSize: '0.9rem',
+      borderRadius: '6px',
+      border: 'none',
+      backgroundColor: '#6c757d',
+      color: 'white',
+      cursor: 'pointer',
+    }
   };
 
   return (
@@ -259,8 +312,19 @@ function PdfScanEditor() {
 
       {aiResult && (
         <div style={styles.resultBox}>
-          <h4>AI 分析結果：</h4>
+          <div style={styles.resultHeader}>
+            <h4 style={styles.resultTitle}>AI 分析結果：</h4>
+            <div style={styles.resultButtons}>
+              <button onClick={handleCopy} style={styles.copyButton}>複製結果</button>
+              <button onClick={handleReset} style={styles.homeButton}>回首頁</button>
+            </div>
+          </div>
           <pre style={styles.resultText}>{aiResult}</pre>
+          {copySuccess && (
+            <p style={{ marginTop: '8px', color: 'green', fontWeight: 'bold' }}>
+              {copySuccess}
+            </p>
+          )}
         </div>
       )}
     </div>
