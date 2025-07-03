@@ -13,15 +13,15 @@ export default function HomePage() {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [lastUserMessage, setLastUserMessage] = useState("");
   const [lastBotResponse, setLastBotResponse] = useState("");
-  const [selectedModels, setSelectedModels] = useState([]);
+  const [selectedModel, setSelectedModel] = useState("1"); // 預設 deepseek
   const chatEndRef = useRef(null);
 
   const AVAILABLE_MODELS = {
-    "1": "openai/gpt-4o",
-    "2": "anthropic/claude-3.7-sonnet:beta",
-    "3": "perplexity/sonar-deep-research",
-    "4": "google/gemini-flash-1.5",
-    "5": "deepseek/deepseek-r1:free",
+    "1": "deepseek",
+    "2": "google",
+    "3": "Claude4.0",
+    "4": "Claude3.7",
+    "5": "ChatGPT4o",
   };
 
   useEffect(() => {
@@ -36,8 +36,8 @@ export default function HomePage() {
     setLastUserMessage(input);
     setInput("");
 
-    if (selectedModels.length === 0) {
-      alert("⚠️ 請選擇至少一個模型！");
+    if (!selectedModel) {
+      alert("⚠️ 請選擇模型！");
       return;
     }
 
@@ -53,14 +53,14 @@ export default function HomePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt: conversationText,
-          models: selectedModels,
+          models: [selectedModel], // 傳陣列格式
         }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        const botText = data.generated_results[AVAILABLE_MODELS[selectedModels[0]]];
+        const botText = data.generated_results[AVAILABLE_MODELS[selectedModel]];
         setMessages((prev) => [...prev, { text: botText, sender: "bot" }]);
         setLastBotResponse(botText);
       } else {
@@ -117,20 +117,10 @@ export default function HomePage() {
     }
   };
 
-  const handleModelChange = (event) => {
-    const modelId = event.target.value;
-    if (event.target.checked) {
-      setSelectedModels((prev) => [...prev, modelId]);
-    } else {
-      setSelectedModels((prev) => prev.filter((id) => id !== modelId));
-    }
-  };
-
   return (
     <div className="flex h-screen bg-gray-100">
       {/* 側邊選單 */}
       <aside className="w-64 bg-gray-900 text-white p-5 flex flex-col">
-        {/* Logo 區 */}
         <div className="flex items-center mb-6">
           <img
             src="/LOGO_Brainmax.png"
@@ -144,10 +134,7 @@ export default function HomePage() {
           <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded">🏠 首頁</li>
           <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded">⚙ 設定</li>
           <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded" onClick={() => navigate("/newpage")}>
-            📄 上傳檔案
-          </li>
-          <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded" onClick={() => navigate("/AiReport")}>
-            📄 Ai分析文檔
+            📄 Ai上傳檔案
           </li>
           <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded" onClick={() => navigate("/Reads")}>
             📄 歷史紀錄
@@ -156,7 +143,7 @@ export default function HomePage() {
         <button className="mt-auto bg-red-600 p-3 rounded-lg hover:bg-red-700">🚪 登出</button>
       </aside>
 
-      {/* 右側聊天區域滿版 */}
+      {/* 聊天區 */}
       <div className="flex flex-1 flex-col h-screen overflow-hidden">
         <header className="bg-blue-600 text-white p-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
@@ -205,9 +192,11 @@ export default function HomePage() {
             {Object.entries(AVAILABLE_MODELS).map(([key, model]) => (
               <label key={key} className="flex items-center gap-2">
                 <input
-                  type="checkbox"
+                  type="radio"
+                  name="model"
                   value={key}
-                  onChange={handleModelChange}
+                  checked={selectedModel === key}
+                  onChange={() => setSelectedModel(key)}
                   className="h-5 w-5"
                 />
                 {model}
@@ -250,7 +239,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 儲存對話的彈出視窗 */}
+      {/* 儲存視窗 */}
       {showSaveModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl">
