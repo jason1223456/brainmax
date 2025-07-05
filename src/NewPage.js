@@ -118,13 +118,13 @@ export default function UploadAndAnalyze() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: text,
-          models: ['5'],
+          models: ['6'],
         }),
       });
       const aiData = await aiRes.json();
 
       if (aiData.success) {
-        const resultText = aiData.generated_results['openai/gpt-4o'] || '';
+        const resultText = aiData.generated_results['google/gemini-2.0-flash-exp:free'] || '';
         setAiResult(resultText);
         setMessage('✅ AI 分析完成');
 
