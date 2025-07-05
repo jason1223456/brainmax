@@ -17,8 +17,8 @@ export default function HomePage() {
   const chatEndRef = useRef(null);
 
   const AVAILABLE_MODELS = {
-    "1": "deepseek",
-    "2": "google",
+    "1": "Deepseek-R1",
+    "2": "Gemini2.5",
     "3": "Claude4.0",
     "4": "Claude3.7",
     "5": "ChatGPT4o",
