@@ -13,7 +13,7 @@ export default function HomePage() {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [lastUserMessage, setLastUserMessage] = useState("");
   const [lastBotResponse, setLastBotResponse] = useState("");
-  const [selectedModel, setSelectedModel] = useState("1"); // 預設 deepseek
+  const [selectedModel, setSelectedModel] = useState("1");
   const chatEndRef = useRef(null);
 
   const AVAILABLE_MODELS = {
@@ -48,27 +48,26 @@ export default function HomePage() {
       .join("\n");
 
     try {
-      const response = await fetch("https://brainmaxs.zeabur.app/generate_copy", {
+      const response = await fetch("http://localhost:5003/generate_copy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt: conversationText,
-          models: [selectedModel], // 傳陣列格式
+          models: [selectedModel],
         }),
       });
 
       const data = await response.json();
+      console.log("API 回傳結果：", data);
 
-      if (data.success) {
-        const botText = data.generated_results[AVAILABLE_MODELS[selectedModel]];
-        setMessages((prev) => [...prev, { text: botText, sender: "bot" }]);
-        setLastBotResponse(botText);
-      } else {
-        setMessages((prev) => [
-          ...prev,
-          { text: "⚠️ 機器人無法回應，請稍後再試。", sender: "bot" },
-        ]);
-      }
+      let botText =
+        data.generated_results?.[AVAILABLE_MODELS[selectedModel]] ||
+        data.generated_results?.[selectedModel] ||
+        Object.values(data.generated_results || {})[0] ||
+        "⚠️ 無法解析回應";
+
+      setMessages((prev) => [...prev, { text: botText, sender: "bot" }]);
+      setLastBotResponse(botText);
     } catch (error) {
       console.error("請求錯誤：", error);
       setMessages((prev) => [
@@ -92,15 +91,18 @@ export default function HomePage() {
 
   const confirmSave = async () => {
     try {
-      const response = await fetch("https://brainmaxs.zeabur.app/save_generated_copy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          full_name: fullName,
-          question: lastUserMessage,
-          answer: lastBotResponse,
-        }),
-      });
+      const response = await fetch(
+        "https://brainmaxs.zeabur.app/save_generated_copy",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            full_name: fullName,
+            question: lastUserMessage,
+            answer: lastBotResponse,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -133,10 +135,16 @@ export default function HomePage() {
         <ul className="flex-1">
           <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded">🏠 首頁</li>
           <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded">⚙ 設定</li>
-          <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded" onClick={() => navigate("/newpage")}>
+          <li
+            className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded"
+            onClick={() => navigate("/newpage")}
+          >
             📄 Ai上傳檔案
           </li>
-          <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded" onClick={() => navigate("/Reads")}>
+          <li
+            className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded"
+            onClick={() => navigate("/Reads")}
+          >
             📄 歷史紀錄
           </li>
         </ul>
@@ -158,31 +166,35 @@ export default function HomePage() {
         </header>
 
         <div className="flex-1 overflow-y-auto p-6 bg-gray-100 w-full">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`flex mb-4 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-            >
-              <div className="relative group">
-                <div
-                  className={`p-3 rounded-2xl whitespace-pre-wrap break-words ${
-                    msg.sender === "user"
-                      ? "bg-blue-500 text-white rounded-br-none max-w-full"
-                      : "bg-gray-200 text-gray-800 rounded-bl-none max-w-full"
-                  }`}
-                >
-                  {msg.text}
+          {messages.length === 0 ? (
+            <p className="text-gray-500">尚無對話。</p>
+          ) : (
+            messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`flex mb-4 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+              >
+                <div className="relative group max-w-[80%]">
+                  <div
+                    className={`p-3 rounded-2xl whitespace-pre-wrap break-words ${
+                      msg.sender === "user"
+                        ? "bg-blue-500 text-white rounded-br-none"
+                        : "bg-gray-200 text-gray-800 rounded-bl-none"
+                    }`}
+                  >
+                    {msg.text || "（無內容）"}
+                  </div>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(msg.text || "")}
+                    className="absolute top-0 right-0 mt-1 mr-1 opacity-0 group-hover:opacity-100 text-xs bg-black text-white px-2 py-1 rounded"
+                    title="複製"
+                  >
+                    複製
+                  </button>
                 </div>
-                <button
-                  onClick={() => navigator.clipboard.writeText(msg.text)}
-                  className="absolute top-0 right-0 mt-1 mr-1 opacity-0 group-hover:opacity-100 text-xs bg-black text-white px-2 py-1 rounded"
-                  title="複製"
-                >
-                  複製
-                </button>
               </div>
-            </div>
-          ))}
+            ))
+          )}
           <div ref={chatEndRef} />
         </div>
 
@@ -248,11 +260,11 @@ export default function HomePage() {
             <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
               <div className="flex-1 p-3 border rounded-md bg-gray-100 overflow-y-auto max-h-40">
                 <h4 className="font-bold mb-2">📌 問題：</h4>
-                <p className="whitespace-pre-wrap break-words">{lastUserMessage}</p>
+                <p className="whitespace-pre-wrap break-words">{lastUserMessage || "（無內容）"}</p>
               </div>
               <div className="flex-1 p-3 border rounded-md bg-gray-100 overflow-y-auto max-h-40">
                 <h4 className="font-bold mb-2">🤖 回應：</h4>
-                <p className="whitespace-pre-wrap break-words">{lastBotResponse}</p>
+                <p className="whitespace-pre-wrap break-words">{lastBotResponse || "（無內容）"}</p>
               </div>
             </div>
 
