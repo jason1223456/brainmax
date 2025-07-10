@@ -48,7 +48,7 @@ export default function HomePage() {
       .join("\n");
 
     try {
-      const response = await fetch("http://localhost:5003/generate_copy", {
+      const response = await fetch("https://brainmaxs.zeabur.app/generate_copy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
