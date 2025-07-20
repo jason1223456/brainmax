@@ -113,7 +113,7 @@ export default function UploadAndAnalyze() {
       setMessage('✅ 儲存成功，開始 AI 分析...');
 
       // 呼叫本地 5003 API
-      const aiRes = await fetch('http://localhost:5003/google_generate', {
+      const aiRes = await fetch('https://brainmaxs.zeabur.app/google_generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: text }),
