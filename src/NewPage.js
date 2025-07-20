@@ -112,19 +112,16 @@ export default function UploadAndAnalyze() {
 
       setMessage('✅ 儲存成功，開始 AI 分析...');
 
-      // 呼叫 AI 分析（只用 deepseek/deepseek-r1:free）
-      const aiRes = await fetch('https://brainmaxs.zeabur.app/generate_copy', {
+      // 呼叫本地 5003 API
+      const aiRes = await fetch('http://localhost:5003/google_generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: text,
-          models: ['6'],
-        }),
+        body: JSON.stringify({ prompt: text }),
       });
       const aiData = await aiRes.json();
 
       if (aiData.success) {
-        const resultText = aiData.generated_results['google/gemini-2.0-flash-exp:free'] || '';
+        const resultText = aiData.result || '';
         setAiResult(resultText);
         setMessage('✅ AI 分析完成');
 
