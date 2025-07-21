@@ -18,10 +18,9 @@ export default function HomePage() {
 
   const AVAILABLE_MODELS = {
     "1": "Deepseek-R1",
-    "2": "Gemini2.5",
+    "2": "Gemini2.0",
     "3": "Claude4.0",
-    "4": "Claude3.7",
-    "5": "ChatGPT4o",
+    "4": "ChatGPT4o",
   };
 
   useEffect(() => {
