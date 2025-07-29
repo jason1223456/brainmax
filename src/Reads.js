@@ -10,14 +10,28 @@ export default function Read() {
   const [search, setSearch] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // 讀 localStorage 的 username 或 fullName
+  const username = localStorage.getItem("username") || localStorage.getItem("fullName") || "";
+
   const fetchData = (searchQuery = "") => {
     setLoading(true);
     setError(null);
 
-    const encoded = encodeURIComponent(searchQuery.trim());
-    const url = searchQuery
-      ? `https://brainmaxs.zeabur.app/get_test_results?q=${encoded}`
-      : `https://brainmaxs.zeabur.app/get_test_results`;
+    // 如果沒登入，直接報錯或導回登入頁
+    if (!username) {
+      setError("❌ 尚未登入，請先登入！");
+      setLoading(false);
+      return;
+    }
+
+    const encodedSearch = encodeURIComponent(searchQuery.trim());
+    const encodedUsername = encodeURIComponent(username.trim());
+
+    // API 依照你的設計加參數 username 跟搜尋字串 q
+    let url = `https://brainmaxs.zeabur.app/get_test_results?username=${encodedUsername}`;
+    if (searchQuery) {
+      url += `&q=${encodedSearch}`;
+    }
 
     fetch(url)
       .then((response) => response.json())
@@ -28,7 +42,7 @@ export default function Read() {
             (item) => item.full_name && item.question && item.answer
           );
           setData(filtered);
-          setCurrentIndex(0); // 回到第一筆
+          setCurrentIndex(0);
         } else {
           setError(result.message || "⚠️ 查詢失敗");
         }
@@ -69,7 +83,6 @@ export default function Read() {
       <div className="bg-white p-6 shadow-lg rounded-2xl w-full max-w-xl">
         <h1 className="text-2xl font-bold mb-4 text-center text-blue-600">📄 單筆資料檢視</h1>
 
-        {/* 搜尋 */}
         <div className="mb-4 flex flex-col sm:flex-row items-stretch gap-2">
           <input
             type="text"
@@ -98,7 +111,6 @@ export default function Read() {
               <div><strong>回應：</strong>{currentItem.answer}</div>
             </div>
 
-            {/* 分頁按鈕 */}
             <div className="flex justify-between items-center mt-6 text-sm text-gray-600">
               <button
                 onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
@@ -119,7 +131,6 @@ export default function Read() {
               </button>
             </div>
 
-            {/* 匯出按鈕 */}
             <button
               onClick={exportToExcel}
               className="mt-6 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
