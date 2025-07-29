@@ -27,6 +27,10 @@ export default function HomePage() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const handleLogout = () => {
+    navigate("/"); // 登出跳轉
+  };
+
   const sendMessage = async () => {
     if (!input.trim()) return;
 
@@ -49,15 +53,18 @@ export default function HomePage() {
     try {
       const response = await fetch("https://brainmaxs.zeabur.app/generate_copy", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           prompt: conversationText,
           models: [selectedModel],
+          username: fullName, // ✅ 傳 fullName 當 username
         }),
       });
 
       const data = await response.json();
-      console.log("API 回傳結果：", data);
+      console.log("🧠 API 回傳：", data);
 
       let botText =
         data.generated_results?.[AVAILABLE_MODELS[selectedModel]] ||
@@ -94,7 +101,9 @@ export default function HomePage() {
         "https://brainmaxs.zeabur.app/save_generated_copy",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             full_name: fullName,
             question: lastUserMessage,
@@ -120,14 +129,9 @@ export default function HomePage() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* 側邊選單 */}
       <aside className="w-64 bg-gray-900 text-white p-5 flex flex-col">
         <div className="flex items-center mb-6">
-          <img
-            src="/LOGO_Brainmax.png"
-            alt="Brainmax Logo"
-            className="w-10 h-10 mr-2 object-contain"
-          />
+          <img src="/LOGO_Brainmax.png" alt="Logo" className="w-10 h-10 mr-2" />
           <h2 className="text-xl font-bold">Brainmax</h2>
         </div>
 
@@ -147,53 +151,49 @@ export default function HomePage() {
             📄 歷史紀錄
           </li>
         </ul>
-        <button className="mt-auto bg-red-600 p-3 rounded-lg hover:bg-red-700">🚪 登出</button>
+        <button
+          className="mt-auto bg-red-600 p-3 rounded-lg hover:bg-red-700"
+          onClick={handleLogout}
+        >
+          🚪 登出
+        </button>
       </aside>
 
-      {/* 聊天區 */}
       <div className="flex flex-1 flex-col h-screen overflow-hidden">
         <header className="bg-blue-600 text-white p-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <img
-              src="/LOGO_Brainmax.png"
-              alt="Brainmax Logo"
-              className="w-10 h-10 object-contain"
-            />
+            <img src="/LOGO_Brainmax.png" alt="Logo" className="w-10 h-10" />
             <h1 className="text-lg font-bold">💬 聊天室</h1>
           </div>
           {fullName && <p className="text-sm">👤 {fullName}</p>}
         </header>
 
         <div className="flex-1 overflow-y-auto p-6 bg-gray-100 w-full">
-          {messages.length === 0 ? (
-            <p className="text-gray-500">尚無對話。</p>
-          ) : (
-            messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex mb-4 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div className="relative group max-w-[80%]">
-                  <div
-                    className={`p-3 rounded-2xl whitespace-pre-wrap break-words ${
-                      msg.sender === "user"
-                        ? "bg-blue-500 text-white rounded-br-none"
-                        : "bg-gray-200 text-gray-800 rounded-bl-none"
-                    }`}
-                  >
-                    {msg.text || "（無內容）"}
-                  </div>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(msg.text || "")}
-                    className="absolute top-0 right-0 mt-1 mr-1 opacity-0 group-hover:opacity-100 text-xs bg-black text-white px-2 py-1 rounded"
-                    title="複製"
-                  >
-                    複製
-                  </button>
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`flex mb-4 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+            >
+              <div className="relative group max-w-[80%]">
+                <div
+                  className={`p-3 rounded-2xl whitespace-pre-wrap break-words ${
+                    msg.sender === "user"
+                      ? "bg-blue-500 text-white rounded-br-none"
+                      : "bg-gray-200 text-gray-800 rounded-bl-none"
+                  }`}
+                >
+                  {msg.text || "（無內容）"}
                 </div>
+                <button
+                  onClick={() => navigator.clipboard.writeText(msg.text || "")}
+                  className="absolute top-0 right-0 mt-1 mr-1 opacity-0 group-hover:opacity-100 text-xs bg-black text-white px-2 py-1 rounded"
+                  title="複製"
+                >
+                  複製
+                </button>
               </div>
-            ))
-          )}
+            </div>
+          ))}
           <div ref={chatEndRef} />
         </div>
 
@@ -250,7 +250,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 儲存視窗 */}
       {showSaveModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl">
