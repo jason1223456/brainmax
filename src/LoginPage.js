@@ -8,29 +8,29 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    setError(""); // 清除錯誤訊息
+    setError("");
 
     try {
       const response = await fetch("https://brainmaxs.zeabur.app/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
 
       const data = await response.json();
 
-      if (data.success) {
-        // 當登入成功時，將 account_level 和 full_name 傳遞到主頁
+      if (data.success && data.token) {
+        // ✅ 正確存 token 和姓名
+        localStorage.setItem("token", data.token.trim());
+        localStorage.setItem("fullName", data.full_name || "");
+
         navigate("/home", {
           state: {
-            accountLevel: data.account_level,
             fullName: data.full_name,
           },
         });
       } else {
-        setError(data.message); // 顯示錯誤訊息
+        setError(data.message || "登入失敗！");
       }
     } catch (err) {
       setError("伺服器錯誤，請稍後再試！");
@@ -38,7 +38,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('https://source.unsplash.com/random/1600x900/?nature,water')" }}>
+    <div
+      className="flex flex-col items-center justify-center h-screen bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('https://source.unsplash.com/random/1600x900/?nature,water')" }}
+    >
       <div className="bg-white p-8 rounded-2xl shadow-lg w-96 bg-opacity-90 backdrop-blur-md">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">登入</h2>
         <input
@@ -66,3 +69,4 @@ export default function LoginPage() {
     </div>
   );
 }
+
