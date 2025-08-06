@@ -15,7 +15,15 @@ export default function UploadAndAnalyze() {
 
   const fetchFiles = async () => {
     try {
-      const res = await fetch('https://brainmaxs.zeabur.app/list_uploaded_files');
+      // 從 localStorage 取得登入的帳號
+      const uploader = localStorage.getItem("username");
+      if (!uploader) {
+        setMessage("❌ 尚未登入，無法取得檔案列表");
+        return;
+      }
+  
+      // 加上 uploader 參數
+      const res = await fetch(`https://brainmaxs.zeabur.app/list_uploaded_files?uploader=${encodeURIComponent(uploader)}`);
       const data = await res.json();
       if (data.success) {
         setFiles(data.data);
@@ -26,6 +34,7 @@ export default function UploadAndAnalyze() {
       setMessage(`❌ 網路錯誤: ${err.message}`);
     }
   };
+  
 
   useEffect(() => {
     fetchFiles();
@@ -48,12 +57,17 @@ export default function UploadAndAnalyze() {
 
   const handleUpload = async () => {
     if (!selectedFile) return setMessage("⚠️ 請先選擇檔案");
+  
     setUploading(true);
     setMessage('');
+  
+    // 從 localStorage 取登入帳號
+    const uploader = localStorage.getItem("username") || "anonymous";
+  
     const formData = new FormData();
     formData.append("file", selectedFile);
-    formData.append("uploader", "root");
-
+    formData.append("uploader", uploader); // ✅ 自動帶入登入帳號
+  
     try {
       const res = await fetch("https://brainmaxs.zeabur.app/upload_file", {
         method: "POST",
@@ -61,7 +75,7 @@ export default function UploadAndAnalyze() {
       });
       const data = await res.json();
       if (data.success) {
-        setMessage("✅ 上傳成功！");
+        setMessage(`✅ 上傳成功！上傳者：${uploader}`);
         setSelectedFile(null);
         fetchFiles();
       } else {
@@ -73,6 +87,7 @@ export default function UploadAndAnalyze() {
       setUploading(false);
     }
   };
+  
 
   const handleScan = async () => {
     if (!selectedId) return setMessage("⚠️ 請先選擇檔案");
