@@ -23,7 +23,7 @@ export default function LoginPage() {
         // ✅ 正確存 token 和姓名
         localStorage.setItem("token", data.token.trim());
         localStorage.setItem("fullName", data.full_name || "");
-
+        localStorage.setItem("username", username); 
         navigate("/home", {
           state: {
             fullName: data.full_name,
@@ -69,4 +69,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
