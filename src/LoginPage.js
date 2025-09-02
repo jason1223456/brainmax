@@ -38,12 +38,13 @@ export default function LoginPage() {
   };
 
   return (
+    
     <div
       className="flex flex-col items-center justify-center h-screen bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('https://source.unsplash.com/random/1600x900/?nature,water')" }}
+      style={{ backgroundImage: "url('/1.png')" }}
     >
       <div className="bg-white p-8 rounded-2xl shadow-lg w-96 bg-opacity-90 backdrop-blur-md">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">登入</h2>
+        <img src="/2.png" alt="Logo" />
         <input
           type="text"
           className="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -60,7 +61,7 @@ export default function LoginPage() {
         />
         {error && <p className="text-red-500 text-sm mb-2 text-center">{error}</p>}
         <button
-          className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition duration-200"
+          className="w-full bg-[#8342f6] text-white p-3 rounded-lg hover:bg-[#6a29dd] transition duration-200"
           onClick={handleLogin}
         >
           登入
