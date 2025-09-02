@@ -129,30 +129,30 @@ export default function HomePage() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <aside className="w-64 bg-gray-900 text-white p-5 flex flex-col">
+      <aside className="w-64 bg-gradient-to-b from-[#d2b3ff] to-[#dae7ff] text-gray-900 p-5 flex flex-col">
         <div className="flex items-center mb-6">
-          <img src="/LOGO_Brainmax.png" alt="Logo" className="w-10 h-10 mr-2" />
+          <img src="/LOGO_Brainmax.png" alt="Logo" className="w-13 h-12 mr-2" />
           <h2 className="text-xl font-bold">Brainmax</h2>
         </div>
 
         <ul className="flex-1">
-          <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded">🏠 首頁</li>
-          <li className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded">⚙ 設定</li>
+          <li className="font-bold text-sm mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded">🏠 首頁</li>
+          <li className="font-bold text-sm mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded">⚙ 設定</li>
           <li
-            className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded"
+            className="font-bold text-sm mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded"
             onClick={() => navigate("/newpage")}
           >
             📄 Ai上傳檔案
           </li>
           <li
-            className="mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded"
+            className="font-bold text-sm mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded"
             onClick={() => navigate("/Reads")}
           >
             📄 歷史紀錄
           </li>
         </ul>
         <button
-          className="mt-auto bg-red-600 p-3 rounded-lg hover:bg-red-700"
+          className="bg-[#8342f6] text-white mt-auto bg-red-600 p-3 rounded-lg hover:bg-red-700"
           onClick={handleLogout}
         >
           🚪 登出
@@ -160,12 +160,8 @@ export default function HomePage() {
       </aside>
 
       <div className="flex flex-1 flex-col h-screen overflow-hidden">
-        <header className="bg-blue-600 text-white p-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <img src="/LOGO_Brainmax.png" alt="Logo" className="w-10 h-10" />
-            <h1 className="text-lg font-bold">💬 聊天室</h1>
-          </div>
-          {fullName && <p className="text-sm">👤 {fullName}</p>}
+      <header className="bg-[#e4def1] text-white p-4 flex justify-between items-center">
+          {fullName && <p className="from-[#1B210E] text-sm">👤 {fullName}</p>}
         </header>
 
         <div className="flex-1 overflow-y-auto p-6 bg-gray-100 w-full">
@@ -235,13 +231,13 @@ export default function HomePage() {
 
           <div className="mt-3 flex justify-end">
             <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700"
+              className="bg-[#cb6ce6] bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700"
               onClick={sendMessage}
             >
               送出
             </button>
             <button
-              className="ml-3 bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700"
+              className="bg-[#8342f6] ml-3 bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700"
               onClick={openSaveModal}
             >
               保存
