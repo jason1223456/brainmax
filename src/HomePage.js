@@ -151,7 +151,7 @@ export default function HomePage() {
           </li>
         </ul>
         <button
-          className="bg-[#8342f6] text-white mt-auto bg-red-600 p-3 rounded-lg hover:bg-red-700"
+          className="bg-[#8342f6] text-white mt-auto p-3 rounded-lg hover:bg-[#6f30d1]"
           onClick={handleLogout}
         >
           🚪 登出
@@ -230,13 +230,13 @@ export default function HomePage() {
 
           <div className="mt-3 flex justify-end">
             <button
-              className="bg-[#cb6ce6] bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700"
+              className="bg-[#cb6ce6] text-white px-4 py-2 rounded-full hover:bg-[#b45fd0]"
               onClick={sendMessage}
             >
               送出
             </button>
             <button
-              className="bg-[#8342f6] ml-3 bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700"
+              className="bg-[#8342f6] ml-3 text-white px-4 py-2 rounded-full hover:bg-[#6f30d1]"
               onClick={openSaveModal}
             >
               保存
