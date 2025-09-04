@@ -129,26 +129,25 @@ export default function HomePage() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <aside className="w-64 bg-gradient-to-b from-[#d2b3ff] to-[#dae7ff] text-gray-900 p-5 flex flex-col">
+      <aside className="w-48 bg-gradient-to-b from-[#d2b3ff] to-[#dae7ff] text-gray-900 p-5 flex flex-col">
         <div className="flex items-center mb-6">
           <img src="/LOGO_Brainmax.png" alt="Logo" className="w-13 h-12 mr-2" />
-          <h2 className="text-xl font-bold">Brainmax</h2>
+          <h2 className="text-lg font-bold">Brainmax</h2>
         </div>
 
         <ul className="flex-1">
           <li className="font-bold text-sm mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded">🏠 首頁</li>
-          <li className="font-bold text-sm mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded">⚙ 設定</li>
           <li
             className="font-bold text-sm mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded"
             onClick={() => navigate("/newpage")}
           >
-            📄 Ai上傳檔案
+            📤 上傳檔案
           </li>
           <li
             className="font-bold text-sm mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded"
             onClick={() => navigate("/Reads")}
           >
-            📄 歷史紀錄
+            📜 歷史紀錄
           </li>
         </ul>
         <button
