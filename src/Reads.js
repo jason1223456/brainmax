@@ -79,8 +79,11 @@ export default function Read() {
   const total = data.length;
 
   return (
-    <div className="min-h-screen overflow-y-auto bg-gray-100 p-6 flex flex-col items-center justify-start">
-      <div className="bg-white p-6 shadow-lg rounded-2xl w-full max-w-xl">
+    <div className="h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center"
+    style={{ backgroundImage: "url('/1.png')" }}>
+      <div className="px-6 py-5 max-w-2xl w-full min-h-[480px] bg-white/80 rounded-lg shadow-lg">
+
+
         <h1 className="text-2xl font-bold mb-4 text-center text-blue-600">📄 單筆資料檢視</h1>
 
         <div className="mb-4 flex flex-col sm:flex-row items-stretch gap-2">
