@@ -175,20 +175,31 @@ export default function UploadAndAnalyze() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-8 p-6 bg-white shadow-lg rounded-xl">
+    <div
+     className="h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center"
+      style={{ backgroundImage: "url('/1.png')" }}
+    >
+      <div className="p-6 max-w-2xl w-full min-h-[500px] bg-white/80 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-4">📄 PDF 上傳與 AI 分析</h2>
 
       {/* 上傳 */}
-      <div className="mb-6">
-        <input type="file" onChange={handleFileChange} className="border p-2 rounded w-full mb-2" />
-        <button
-          onClick={handleUpload}
-          disabled={uploading}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-        >
-          {uploading ? "上傳中..." : "🚀 上傳檔案"}
-        </button>
+      <div className="mb-6 flex items-center">
+       <input
+        type="file"
+        onChange={handleFileChange}
+        className="border p-2 rounded w-full mr-2"
+       />
+       <button
+        onClick={handleUpload}
+        disabled={uploading}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 whitespace-nowrap"
+       >
+       {uploading ? "上傳中..." : "🚀 上傳檔案"}
+         </button>
       </div>
+      <p className="text-gray-400 px-4 py-2 -mt-5">
+      💾 僅支援 PDF 檔案，大小上限 10 MB
+      </p>
 
       {/* 選擇檔案 */}
       <div className="flex items-center gap-4 mb-4">
@@ -207,7 +218,7 @@ export default function UploadAndAnalyze() {
         <button
           onClick={handleScan}
           disabled={!selectedId || loading}
-          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 whitespace-nowrap"
         >
           {loading ? "掃描中..." : "開始掃描"}
         </button>
@@ -217,7 +228,8 @@ export default function UploadAndAnalyze() {
       <textarea
         value={text}
         onChange={e => setText(e.target.value)}
-        placeholder="掃描結果會出現在這裡..."
+        placeholder="掃描檔案過程約需幾分鐘，請耐心等候 😊
+        掃描完成後，您可在此檢閱、修改辨識出的摘要後再點選AI分析"
         className="w-full border rounded p-3 mb-4 h-64 resize-y"
       />
 
@@ -264,6 +276,7 @@ export default function UploadAndAnalyze() {
           {message}
         </p>
       )}
+    </div>
     </div>
   );
 }
