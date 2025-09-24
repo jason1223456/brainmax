@@ -132,18 +132,18 @@ export default function HomePage() {
     <div className="flex h-screen bg-gray-100">
       <aside className="w-48 bg-gradient-to-b from-[#d2b3ff] to-[#dae7ff] text-gray-900 p-5 flex flex-col">
         <div className="flex items-center mb-6">
-          <img src="/LOGO_Brainmax.png" alt="Logo" className="w-13 h-12 mr-2" />
+        <img src="/LOGO_Brainmax.png" alt="Logo" className="w-13 h-12 mr-4 ml-3" />
         </div>
 
         <ul className="flex-1">
           <li
-            className="font-bold text-sm mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded"
+            className="font-bold text-sm mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded text-left w-max"
             onClick={() => navigate("/newpage")}
           >
             📤 上傳檔案與分析
           </li>
           <li
-            className="font-bold text-sm mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded"
+             className="font-bold text-sm mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded text-left w-max"
             onClick={() => navigate("/Reads")}
           >
             📜 已保存紀錄
