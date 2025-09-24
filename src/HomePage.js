@@ -18,10 +18,9 @@ export default function HomePage() {
 
   const AVAILABLE_MODELS = {
     "1": "Deepseek-R1",
-    "2": "Gemini2.5",
+    "2": "Gemini2.0",
     "3": "Claude4.0",
     "4": "ChatGPT4o",
-    "5": "ChatGPT5",
   };
 
   useEffect(() => {
@@ -133,22 +132,20 @@ export default function HomePage() {
       <aside className="w-48 bg-gradient-to-b from-[#d2b3ff] to-[#dae7ff] text-gray-900 p-5 flex flex-col">
         <div className="flex items-center mb-6">
           <img src="/LOGO_Brainmax.png" alt="Logo" className="w-13 h-12 mr-2" />
-          <h2 className="text-lg font-bold">Brainmax</h2>
         </div>
 
         <ul className="flex-1">
-          <li className="font-bold text-sm mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded">🏠 首頁</li>
           <li
             className="font-bold text-sm mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded"
             onClick={() => navigate("/newpage")}
           >
-            📤 上傳檔案
+            📤 上傳檔案與分析
           </li>
           <li
             className="font-bold text-sm mb-4 p-3 hover:bg-gray-700 cursor-pointer rounded"
             onClick={() => navigate("/Reads")}
           >
-            📜 歷史紀錄
+            📜 已保存紀錄
           </li>
         </ul>
         <button
@@ -161,7 +158,7 @@ export default function HomePage() {
 
       <div className="flex flex-1 flex-col h-screen overflow-hidden">
       <header className="bg-[#e4def1] text-white p-4 flex justify-between items-center">
-          {fullName && <p className="from-[#1B210E] text-sm">👤 {fullName}</p>}
+          {fullName && <p className="text-black text-sm"> 👤 {fullName}</p>}
         </header>
 
         <div className="flex-1 overflow-y-auto p-6 bg-gray-100 w-full">
@@ -230,6 +227,9 @@ export default function HomePage() {
           <p className="text-sm text-gray-500 ml-3 mt-1">{input.length}/1000</p>
 
           <div className="mt-3 flex justify-end">
+          <p className="text-gray-400 px-4 py-2 rounded-full">
+             💾 想保留本次生成結果嗎？記得按下右邊的「保存」按鈕喔！
+            </p>
             <button
               className="bg-[#cb6ce6] text-white px-4 py-2 rounded-full hover:bg-[#b45fd0]"
               onClick={sendMessage}
