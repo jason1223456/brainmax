@@ -21,6 +21,7 @@ export default function HomePage() {
     "2": "Gemini2.0",
     "3": "Claude4.0",
     "4": "ChatGPT4o",
+    "5": "ChatGPT5",
   };
 
   useEffect(() => {
