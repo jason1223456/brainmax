@@ -15,14 +15,11 @@ export default function UploadAndAnalyze() {
 
   const fetchFiles = async () => {
     try {
-      // 從 localStorage 取得登入的帳號
       const uploader = localStorage.getItem("username");
       if (!uploader) {
         setMessage("❌ 尚未登入，無法取得檔案列表");
         return;
       }
-  
-      // 加上 uploader 參數
       const res = await fetch(`https://brainmaxs.zeabur.app/list_uploaded_files?uploader=${encodeURIComponent(uploader)}`);
       const data = await res.json();
       if (data.success) {
@@ -34,7 +31,6 @@ export default function UploadAndAnalyze() {
       setMessage(`❌ 網路錯誤: ${err.message}`);
     }
   };
-  
 
   useEffect(() => {
     fetchFiles();
@@ -57,17 +53,12 @@ export default function UploadAndAnalyze() {
 
   const handleUpload = async () => {
     if (!selectedFile) return setMessage("⚠️ 請先選擇檔案");
-  
     setUploading(true);
     setMessage('');
-  
-    // 從 localStorage 取登入帳號
     const uploader = localStorage.getItem("username") || "anonymous";
-  
     const formData = new FormData();
     formData.append("file", selectedFile);
-    formData.append("uploader", uploader); // ✅ 自動帶入登入帳號
-  
+    formData.append("uploader", uploader);
     try {
       const res = await fetch("https://brainmaxs.zeabur.app/upload_file", {
         method: "POST",
@@ -87,7 +78,6 @@ export default function UploadAndAnalyze() {
       setUploading(false);
     }
   };
-  
 
   const handleScan = async () => {
     if (!selectedId) return setMessage("⚠️ 請先選擇檔案");
@@ -114,9 +104,7 @@ export default function UploadAndAnalyze() {
     setSaving(true);
     setMessage('');
     setAiResult('');
-
     try {
-      // 儲存掃描文字
       const saveRes = await fetch('https://brainmaxs.zeabur.app/save_scanned_text', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -124,33 +112,24 @@ export default function UploadAndAnalyze() {
       });
       const saveData = await saveRes.json();
       if (!saveData.success) throw new Error(saveData.message);
-
       setMessage('✅ 儲存成功，開始 AI 分析...');
-
-      // 呼叫本地 5003 API
       const aiRes = await fetch('https://brainmaxs.zeabur.app/google_generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: text }),
       });
       const aiData = await aiRes.json();
-
       if (aiData.success) {
         const resultText = aiData.result || '';
         setAiResult(resultText);
         setMessage('✅ AI 分析完成');
-
         if (resultText) {
           await fetch('https://brainmaxs.zeabur.app/save_ai_result', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              file_id: Number(selectedId),
-              ai_generated_text: resultText,
-            }),
+            body: JSON.stringify({ file_id: Number(selectedId), ai_generated_text: resultText }),
           });
         }
-
         fetchFiles();
       } else {
         setMessage('❌ AI 分析失敗: ' + aiData.message);
@@ -174,111 +153,107 @@ export default function UploadAndAnalyze() {
     });
   };
 
+  const Spinner = () => (
+    <span className="ml-2 inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+  );
+
   return (
     <div
-     className="h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center"
+      className="min-h-screen w-full px-2 sm:px-6 bg-cover bg-center bg-no-repeat flex justify-center py-6 overflow-y-auto"
       style={{ backgroundImage: "url('/1.png')" }}
     >
-      <div className="p-6 max-w-2xl w-full min-h-[500px] bg-white/80 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-4">📄 PDF 上傳與 AI 分析</h2>
+      <div className="p-6 max-w-2xl w-full bg-white/80 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-4">📄 PDF 上傳與 AI 分析</h2>
 
-      {/* 上傳 */}
-      <div className="mb-6 flex items-center">
-       <input
-        type="file"
-        onChange={handleFileChange}
-        className="border p-2 rounded w-full mr-2"
-       />
-       <button
-        onClick={handleUpload}
-        disabled={uploading}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 whitespace-nowrap"
-       >
-       {uploading ? "上傳中..." : "🚀 上傳檔案"}
-         </button>
-      </div>
-      <p className="text-gray-400 px-4 py-2 -mt-5">
-      💾 僅支援 PDF 檔案，大小上限 10 MB
-      </p>
-
-      {/* 選擇檔案 */}
-      <div className="flex items-center gap-4 mb-4">
-        <select
-          value={selectedId}
-          onChange={e => setSelectedId(e.target.value)}
-          className="border p-2 rounded w-full"
-        >
-          <option value="">請選擇 PDF 檔案</option>
-          {files.map(f => (
-            <option key={f.id} value={f.id}>
-              {f.file_name}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={handleScan}
-          disabled={!selectedId || loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 whitespace-nowrap"
-        >
-          {loading ? "掃描中..." : "開始掃描"}
-        </button>
-      </div>
-       <p className="text-gray-400 px-4 py-2 -mt-5">
-      💾 上傳後請從下拉選單中選取檔案進行掃描
-      </p>
-      {/* 掃描結果 */}
-      <textarea
-        value={text}
-        onChange={e => setText(e.target.value)}
-        placeholder="掃描檔案過程約需幾分鐘，請耐心等候 😊
-        掃描完成後，您可在此檢閱、修改辨識出的摘要後再點選AI分析"
-        className="w-full border rounded p-3 mb-4 h-64 resize-y"
-      />
-
-      {/* 儲存 */}
-      <div className="flex justify-between items-center flex-wrap gap-4 mb-4">
-        <button
-          onClick={handleSave}
-          disabled={saving || !selectedId || !text.trim()}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
-        >
-          {saving ? "儲存中..." : "儲存並開始 AI 分析"}
-        </button>
-        <button
-          onClick={() => (window.location.href = "/home")}
-          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-        >
-          返回首頁
-        </button>
-      </div>
-
-      {/* AI 分析結果 */}
-      {aiResult ? (
-        <div className="bg-gray-100 p-4 rounded mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <h4 className="font-bold">AI 分析結果</h4>
-            <button
-              onClick={handleCopy}
-              className={`px-3 py-1 rounded text-white ${
-                copyActive ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"
-              }`}
-            >
-              {copyActive ? "已複製！" : "複製結果"}
-            </button>
-          </div>
-          <pre className="whitespace-pre-wrap font-mono text-sm">{aiResult}</pre>
+        {/* 上傳 */}
+        <div className="mb-4 flex items-center gap-2">
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="border p-2 rounded w-full"
+          />
+          <button
+            onClick={handleUpload}
+            disabled={uploading}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center whitespace-nowrap"
+          >
+            {uploading ? <>上傳中... <Spinner /></> : "🚀 上傳檔案"}
+          </button>
         </div>
-      ) : selectedId ? (
-        <p className="text-gray-500 italic mb-4">尚無 AI 分析結果</p>
-      ) : null}
+        <p className="text-gray-400 text-sm mb-6">💾 僅支援 PDF 檔案，大小上限 10 MB</p>
 
-      {/* 提示訊息 */}
-      {message && (
-        <p className={`font-medium ${message.includes("失敗") || message.includes("錯誤") ? "text-red-600" : "text-green-600"}`}>
-          {message}
-        </p>
-      )}
-    </div>
+        {/* 選擇檔案 */}
+        <div className="mb-4 flex items-center gap-2">
+          <select
+            value={selectedId}
+            onChange={e => setSelectedId(e.target.value)}
+            className="border p-2 rounded w-full"
+          >
+            <option value="">請選擇 PDF 檔案</option>
+            {files.map(f => (
+              <option key={f.id} value={f.id}>{f.file_name}</option>
+            ))}
+          </select>
+          <button
+            onClick={handleScan}
+            disabled={!selectedId || loading}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center whitespace-nowrap"
+          >
+            {loading ? <>掃描中... <Spinner /></> : "開始掃描"}
+          </button>
+        </div>
+        <p className="text-gray-400 text-sm mb-4">📌 上傳後請從下拉選單中選取檔案進行掃描</p>
+
+        {/* 掃描結果 */}
+        <textarea
+          value={text}
+          onChange={e => setText(e.target.value)}
+          placeholder="掃描檔案過程約需幾分鐘，請耐心等候 😊掃描完成後，您可在此檢閱、修改辨識出的摘要後再點選 AI 分析"
+          className="w-full border rounded p-3 mb-4 h-64 max-h-80 resize-y"
+        />
+
+        {/* 儲存 */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+          <button
+            onClick={handleSave}
+            disabled={saving || !selectedId || !text.trim()}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 w-full sm:w-auto flex items-center justify-center"
+          >
+            {saving ? <>儲存中... <Spinner /></> : "儲存並開始 AI 分析"}
+          </button>
+          <button
+            onClick={() => (window.location.href = "/home")}
+            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 w-full sm:w-auto"
+          >
+            返回首頁
+          </button>
+        </div>
+
+        {/* AI 分析結果 */}
+        {aiResult ? (
+          <div className="bg-gray-100 p-4 rounded mb-4">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="font-bold">AI 分析結果</h4>
+              <button
+                onClick={handleCopy}
+                className={`px-3 py-1 rounded text-white ${copyActive ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"}`}
+              >
+                {copyActive ? "已複製！" : "複製結果"}
+              </button>
+            </div>
+            <pre className="whitespace-pre-wrap font-mono text-sm">{aiResult}</pre>
+          </div>
+        ) : selectedId ? (
+          <p className="text-gray-500 italic mb-4">尚無 AI 分析結果</p>
+        ) : null}
+
+        {/* 提示訊息 */}
+        {message && (
+          <p className={`font-medium ${message.includes("失敗") || message.includes("錯誤") ? "text-red-600" : "text-green-600"}`}>
+            {message}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
