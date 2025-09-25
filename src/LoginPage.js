@@ -49,14 +49,14 @@ export default function LoginPage() {
         <input
           type="text"
           className="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="輸入帳號  請輸入帳號"
+          placeholder="請輸入帳號"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
         <input
           type="password"
           className="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="輸入密碼  請輸入密碼"
+          placeholder="請輸入密碼"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
