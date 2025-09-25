@@ -223,7 +223,9 @@ export default function UploadAndAnalyze() {
           {loading ? "掃描中..." : "開始掃描"}
         </button>
       </div>
-
+       <p className="text-gray-400 px-4 py-2 -mt-5">
+      💾 上傳後請從下拉選單中選取檔案進行掃描
+      </p>
       {/* 掃描結果 */}
       <textarea
         value={text}
